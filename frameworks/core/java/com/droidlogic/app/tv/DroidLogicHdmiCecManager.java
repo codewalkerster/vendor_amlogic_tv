@@ -286,6 +286,11 @@ public class DroidLogicHdmiCecManager {
         }
 
         if (isHdmiDeviceId(deviceId)) { // Hdmi device
+            if (isLauncherPipForeground()) {
+                // For android cts HdmiCecInvalidMessagesTest#cect_IgnoreBroadcastedFromSameSource etc.
+                Log.w(TAG, "onSetMain ignore routing control if droidlogic launcher pip is foreground");
+                return;
+            }
             if (isMain) {
                 TvInputInfo info = mTvInputManager.getTvInputInfo(inputId);
                 if (info == null) {
@@ -315,7 +320,9 @@ public class DroidLogicHdmiCecManager {
                 }
             } else {
                 // case 3: leave hdmi, try to device select 0
-                if (deviceId == mCurrentSelect.getDeviceId() && (sessionId != mCurrentSelect.getSessionId())) {
+                if (mCurrentSelect == null
+                    || (deviceId == mCurrentSelect.getDeviceId()
+                    && (sessionId != mCurrentSelect.getSessionId()))) {
                     // Same hdmi but different session id. In this case the sequence of setMain is not for sure.
                     return;
                 }
