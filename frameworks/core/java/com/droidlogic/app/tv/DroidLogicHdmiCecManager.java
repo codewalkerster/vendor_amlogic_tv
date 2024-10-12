@@ -312,8 +312,9 @@ public class DroidLogicHdmiCecManager {
                 if (hdmiDevice == null) {
                     hdmiDevice = getHdmiDeviceInfo(inputId);
                 }
-
-                if (hdmiDevice != null) {
+                HdmiDeviceInfo avr = getAvrDeviceInfo();
+                if (hdmiDevice != null
+                        && (avr == null || avr.getPhysicalAddress() != hdmiDevice.getPhysicalAddress())) {
                     Log.d(TAG, "onSetMain hdmi device " + hdmiDevice);
                     mSelectingDevice.setLogicalAddress(hdmiDevice.getLogicalAddress());
                     mCurrentSelect = mSelectingDevice;
@@ -341,6 +342,16 @@ public class DroidLogicHdmiCecManager {
             mCurrentSelect = INTERNAL_DEVICE;
             deviceSelect();
         }
+    }
+
+    private HdmiDeviceInfo getAvrDeviceInfo() {
+        List<HdmiDeviceInfo> connectedDevices = mHdmiControlManager.getConnectedDevices();
+        for (HdmiDeviceInfo device : connectedDevices) {
+            if (device.getDeviceType() == HdmiDeviceInfo.DEVICE_AUDIO_SYSTEM) {
+                return device;
+            }
+        }
+        return null;
     }
 
     private boolean isLauncherPipForeground() {
