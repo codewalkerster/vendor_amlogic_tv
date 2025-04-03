@@ -89,6 +89,8 @@ public class DroidLogicHdmiCecManager {
 
     private static final String DROIDLOGIC_LAUNCHER_FOREGROUND = "droidlogic_launcher_foreground";
 
+    protected static final String TV_INPUT_DEVICE = "tv_input_device";
+
     private static DroidLogicHdmiCecManager mInstance;
 
     private Context mContext;
@@ -102,6 +104,8 @@ public class DroidLogicHdmiCecManager {
 
     private SelectDeviceInfo mCurrentSelect;
     private SelectDeviceInfo mSelectingDevice;
+
+    private int mTvSetMain;// Mark the current device id.
 
     private final SelectDeviceInfo INTERNAL_DEVICE = new SelectDeviceInfo(HdmiDeviceInfo.ADDR_INTERNAL);
 
@@ -279,7 +283,14 @@ public class DroidLogicHdmiCecManager {
             Log.v(TAG, "onSetMain no cec then no need.");
             return;
         }
-        Log.d(TAG, "onSetMain " + isMain + " " + inputId);
+        Log.d(TAG, "onSetMain " + isMain + " " + inputId + " session:" + sessionId);
+        if (isMain) {
+            mTvSetMain++;
+            Global.putInt(mContext.getContentResolver(), TV_INPUT_DEVICE, deviceId);
+        } else if (--mTvSetMain == 0) {
+            Global.putInt(mContext.getContentResolver(), TV_INPUT_DEVICE, 0);
+        }
+
         mSelectingDevice = new SelectDeviceInfo(inputId, deviceId, sessionId);
 
         if (mTvClient == null) {
