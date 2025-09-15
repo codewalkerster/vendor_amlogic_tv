@@ -256,6 +256,7 @@ public class DroidLogicHdmiCecManager {
         filter.addAction(ACTION_OTP_INPUT_SOURCE_CHANGE);
         mContext.registerReceiver(mInputSourceChangeReceiver, filter,
             Context.RECEIVER_EXPORTED | Context.RECEIVER_VISIBLE_TO_INSTANT_APPS);
+        Global.putInt(mContext.getContentResolver(), TV_INPUT_DEVICE, 0);
     }
 
     /**
